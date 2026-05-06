@@ -41,18 +41,15 @@ class DLL{
         }
     }
 
-    void addToFrontList(string key, string value){
-        Node* newNode = new Node(key, value);
-        newNode->next = nullptr;
-        newNode->prev = nullptr;
+    void addToFrontList(Node* node){
 
         if(length == 0){
-            head = newNode;
-            tail = newNode;
+            head = node;
+            tail = node;
 
         }else{
-            head->prev = newNode;
-            newNode->next = head;
+            head->prev = node;
+            node->next = head;
             head = head->prev;
         }
         //Update length
@@ -67,11 +64,11 @@ class DLL{
         }
     }
 
-    void remove(string value){
+    void remove(Node* node){
         if(length == 0) return;
 
         Node* temp = head;
-        while(temp->value != value){
+        while(temp != node){
             temp = temp->next;
         }
 
@@ -111,7 +108,7 @@ class DLL{
 
 class LRUcache{
     public:
-        unordered_map<string, string> myMap;
+        unordered_map<string, Node*> myMap;
         DLL* myDLL = new DLL();
         int capacity;
 
@@ -120,24 +117,29 @@ class LRUcache{
     }
 
     void set(string key, string value){
+
         // If found
         if(myMap.find(key) != myMap.end()){
             // Update the value in the map
-            myMap[key] = value;
+            myMap[key]->value = value;
             // Remove the node and add new node to the front
-            myDLL->remove(value);
-            myDLL->addToFrontList(key, value);
+            myDLL->remove(myMap[key]);
+            myDLL->addToFrontList(myMap[key]);
         }else{
-            myMap[key] = value;
-            myDLL->addToFrontList(key, value);
+            // Create node here and set it in the map
+            Node* newNode = new Node(key, value);
+            newNode->next = nullptr;
+            newNode->prev = nullptr;
+
+            myMap[key] = newNode;
+            myDLL->addToFrontList(newNode);
 
             // Updating both structures
             if(myMap.size() > capacity){
-                Node* toDelete = myDLL->tail;
-                // Remove from DLL
-                myDLL->remove(toDelete->value);
-                // Remove from map
-                myMap.erase(toDelete->key);
+                // Get LRU node (the tail)
+                Node* LRU = myDLL->tail;
+                myDLL->remove(LRU);
+                myMap.erase(LRU->key);
             }
         }
     }
@@ -146,12 +148,12 @@ class LRUcache{
         // Note for next code sesh. If it exists, then I can return the value. So maybe change the function from void to string. 
         // If not found, return null or string that says not found.
         if(myMap.find(key) != myMap.end()){
-            // Return the value
-            string temp = myMap[key];
-            cout << "Found value: " << temp << endl;
+            // Return the node
+            Node* temp = myMap[key];
+            cout << "Found value: " << temp->value << endl;
             // Update the DLL
             myDLL->remove(temp);
-            myDLL->addToFrontList(key, temp);
+            myDLL->addToFrontList(temp);
         }else{
             cout << "Value not found. Run the set function to add." << endl;
         }
