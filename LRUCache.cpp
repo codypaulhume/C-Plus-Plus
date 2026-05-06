@@ -145,8 +145,6 @@ class LRUcache{
     }
 
     void get(string key){
-        // Note for next code sesh. If it exists, then I can return the value. So maybe change the function from void to string. 
-        // If not found, return null or string that says not found.
         if(myMap.find(key) != myMap.end()){
             // Return the node
             Node* temp = myMap[key];
