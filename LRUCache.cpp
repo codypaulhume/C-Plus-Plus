@@ -65,6 +65,8 @@ class DLL{
     }
 
     void remove(Node* node){
+        // Detaches the node from the list
+
         if(length == 0) return;
 
         Node* temp = head;
@@ -75,7 +77,7 @@ class DLL{
         if(length == 1){
             head = nullptr;
             tail = nullptr;
-            delete temp;
+
         }
 
 
@@ -91,8 +93,6 @@ class DLL{
                 temp->next->prev = temp->prev;
             }
         }
-        delete temp;
-        length--;
     }
 
     void printList(){
